@@ -1,0 +1,17 @@
+{
+  "name": "aws-lambda-api-integration-starter",
+  "version": "1.0.0",
+  "description": "Production-minded Node.js starter for resilient API integrations on AWS Lambda.",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/handler.js && node --check src/integration-service.js"
+  },
+  "devDependencies": {
+    "serverless": "^4.0.0"
+  }
+}
