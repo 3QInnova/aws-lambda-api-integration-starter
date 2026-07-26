@@ -1,0 +1,48 @@
+service: aws-lambda-api-integration-starter
+
+frameworkVersion: "4"
+
+provider:
+  name: aws
+  runtime: nodejs22.x
+  architecture: arm64
+  region: ${opt:region, 'us-east-1'}
+  stage: ${opt:stage, 'dev'}
+  logRetentionInDays: 14
+  environment:
+    SERVICE_NAME: ${self:service}
+    STAGE: ${sls:stage}
+    UPSTREAM_API_URL: ${env:UPSTREAM_API_URL, 'https://example.com/api'}
+    UPSTREAM_TIMEOUT_MS: ${env:UPSTREAM_TIMEOUT_MS, '3000'}
+    UPSTREAM_MAX_ATTEMPTS: ${env:UPSTREAM_MAX_ATTEMPTS, '3'}
+  httpApi:
+    cors:
+      allowedOrigins:
+        - https://example.com
+      allowedHeaders:
+        - Content-Type
+        - X-Correlation-Id
+      allowedMethods:
+        - GET
+        - POST
+
+functions:
+  health:
+    handler: src/handler.health
+    events:
+      - httpApi:
+          path: /health
+          method: GET
+
+  integrate:
+    handler: src/handler.integrate
+    events:
+      - httpApi:
+          path: /v1/integrations
+          method: POST
+
+package:
+  patterns:
+    - "!test/**"
+    - "!README.md"
+    - "!LICENSE"
