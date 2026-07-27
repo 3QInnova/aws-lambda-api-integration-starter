@@ -32,6 +32,31 @@ flowchart LR
     Lambda --> Logs["Structured logs and correlation IDs"]
 ```
 
+### Request lifecycle
+
+```mermaid
+sequenceDiagram
+    autonumber
+    participant Client
+    participant Gateway as API Gateway
+    participant Lambda as Lambda integration
+    participant API as Enterprise API
+    participant Logs as Observability
+
+    Client->>Gateway: Validated HTTP request
+    Gateway->>Lambda: Event + correlation ID
+    Lambda->>Lambda: Validate and normalize
+    Lambda->>API: Bounded request with timeout
+    alt Retryable upstream failure
+        API-->>Lambda: 429 or transient 5xx
+        Lambda->>API: Retry with exponential backoff
+    end
+    API-->>Lambda: Upstream response
+    Lambda->>Lambda: Normalize stable contract
+    Lambda-->>Logs: Structured outcome event
+    Lambda-->>Client: Safe JSON response
+```
+
 ## API
 
 ### `GET /health`
