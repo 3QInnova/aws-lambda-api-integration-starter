@@ -29,6 +29,7 @@ provider:
 functions:
   health:
     handler: src/handler.health
+    reservedConcurrency: 2
     events:
       - httpApi:
           path: /health
@@ -36,6 +37,7 @@ functions:
 
   integrate:
     handler: src/handler.integrate
+    reservedConcurrency: 2
     events:
       - httpApi:
           path: /v1/integrations
